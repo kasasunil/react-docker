@@ -1,0 +1,29 @@
+#Concept - multi step dockerfile
+
+
+
+# First block- 
+#creating alias for first block, whereever we say "from" it means it is the start/end of block.
+# We can only have one "from", at last image takes the latest "From block".
+# In this step after running npm run build, build file will be created in container, with path: /app/build
+From node as builder 
+
+Workdir /app
+
+copy package.json .
+
+run npm install
+
+copy . .
+
+run npm run build
+
+
+# Second block -
+# For statting nginx
+From nginx
+
+# By default what ever we store in "/usr/share/nginx/html" will be visible in browser/executed by nginx.
+# Since we used From it is a new block, to access anything from previous block create a alias for that block and use a flag
+# called --from=<block_alias_name>
+copy --from=builder /app/build /usr/share/nginx/html
